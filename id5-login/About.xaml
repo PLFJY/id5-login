@@ -1,0 +1,13 @@
+﻿<Window x:Class="id5_login.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:id5_login"
+        mc:Ignorable="d"
+        Title="About" Height="124" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Label Content="本软件由哔哩哔哩@零风PLFJY 制作&#xD;&#xA;由@滑滑滑滑滑倒廖 制作的核心程序&#xD;&#xA;" HorizontalAlignment="Center" VerticalAlignment="Center" Height="74" Width="354" FontSize="20"/>
+
+    </Grid>
+</Window>
