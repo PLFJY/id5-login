@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:id5_login"
         mc:Ignorable="d"
-        Title="第五人格PC端登录工具" Height="300" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Closing="Window_Closing" Closed="Window_Closed">
+        Title="正在检测环境..." Height="300" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>

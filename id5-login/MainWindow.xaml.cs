@@ -12,20 +12,11 @@ namespace id5_login
     public partial class MainWindow : Window
     {
         public bool IsPythonInstalled, IsMitmproxyInstalled1;
+        public static MainWindow mainWindow;
         public MainWindow()
         {
             InitializeComponent();
-            CheckPythonAndPipInstallationAndUpdateButton();
-            if (IsMitmproxyInstalled() == true)
-            {
-                InitCheck.Content = "依赖已安装";
-                IsMitmproxyInstalled1 = true;
-            }
-            else
-            {
-                InitCheck.Content = "安装依赖";
-                IsMitmproxyInstalled1 = false;
-            }
+            mainWindow = this;
         }
         private void CheckPythonAndPipInstallationAndUpdateButton()
         {
@@ -108,7 +99,17 @@ namespace id5_login
             if (persentToInt == 100)
             {
                 label1.Content = "下载完成";
-                Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe");
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    // 64-bit system
+                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe");
+                }
+                else
+                {
+                    // 32-bit system
+                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe");
+                }
+
             }
         }
         private void PythonCheck_Click(object sender, RoutedEventArgs e)
@@ -116,8 +117,19 @@ namespace id5_login
             MessageBoxResult result = MessageBox.Show("是否安装Python", "Python Installation", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.OK)
             {
-                string http_url = "https://gitee.com/plfjy/id5-login-resource/releases/download/V1.0/python-3.12.2-amd64.exe";
-                string save_url = AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe";
+                string http_url, save_url;
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    // 64-bit system
+                    http_url = "https://gitee.com/plfjy/id5-login-resource/releases/download/V1.0/python-3.12.2-amd64.exe";
+                    save_url = AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe";
+                }
+                else
+                {
+                    // 32-bit system
+                    http_url = "https://gitee.com/plfjy/id5-login-resource/releases/download/V1.0/python-3.12.3.exe";
+                    save_url = AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe";
+                }
                 DownloadHttpFile(http_url, save_url);
                 Pb.Visibility = Visibility.Visible;
             }
@@ -154,7 +166,7 @@ namespace id5_login
 
         private void InitCheck_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("是否安装依赖?", "Dependency Installation", MessageBoxButton.YesNo);
+            MessageBoxResult result = MessageBox.Show("是否安装mitmproxy?", "mitmproxy Installation", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
                 try
@@ -169,19 +181,6 @@ namespace id5_login
                 }
             }
         }
-
-        private void SetPath_Click(object sender, RoutedEventArgs e)
-        {
-            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string dwrgFilePath = Path.Combine(appDataPath, "dwrg_path.txt");
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "dwrg执行文件|dwrg.exe";
-            if (openFileDialog.ShowDialog() == true)
-            {
-                File.WriteAllText(dwrgFilePath, openFileDialog.FileName);
-            }
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //弹出确认框
@@ -191,7 +190,6 @@ namespace id5_login
                 e.Cancel = true;
             }
         }
-
         private void Window_Closed(object sender, EventArgs e)
         {
             //关闭python.exe进程
@@ -215,6 +213,22 @@ namespace id5_login
             about.ShowDialog();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            CheckPythonAndPipInstallationAndUpdateButton();
+            if (IsMitmproxyInstalled() == true)
+            {
+                InitCheck.Content = "mitmproxy已安装";
+                IsMitmproxyInstalled1 = true;
+            }
+            else
+            {
+                InitCheck.Content = "安装mitmproxy";
+                IsMitmproxyInstalled1 = false;
+            }
+            mainWindow.Title = "第五人格PC端登录工具";
+        }
+
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             if (IsPythonInstalled && IsMitmproxyInstalled1)
@@ -223,7 +237,7 @@ namespace id5_login
             }
             else
             {
-                MessageBox.Show("请先安装依赖", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("请先安装Python或mitmproxy", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
