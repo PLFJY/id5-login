@@ -5,15 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:id5_login"
         mc:Ignorable="d"
-        Title="正在检测环境..." Height="300" Width="500" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded">
+        Title="正在检测环境..." Height="307" Width="512" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" Closing="Window_Closing" Closed="Window_Closed" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="53*"/>
+            <RowDefinition Height="52*"/>
+            <RowDefinition Height="16*"/>
         </Grid.RowDefinitions>
-        <Label Content="第五人格PC端登录工具" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+        <Label Content="第五人格PC端登录工具" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Height="36" Width="216"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Width="386" Margin="0,0,0,1">
             <StackPanel VerticalAlignment="Bottom">
                 <Button Content="Python安装检查" Width="150" Height="50" FontSize="16" Name="PythonCheck" Click="PythonCheck_Click"/>
                 <StackPanel Name="Pb" Margin="0,10,0,0" Orientation="Horizontal" Visibility="Hidden">
@@ -24,9 +25,11 @@
             </StackPanel>
             <Button Content="初始化检查" Width="150" Height="50" Margin="50,0,0,15" FontSize="16" Name="InitCheck" Click="InitCheck_Click"/>
         </StackPanel>
-        <StackPanel Grid.Row="2" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center" >
-            <Button Content="启动登录脚本" Width="150" Height="50" FontSize="20" Name="Start" Click="Start_Click"/>
+        <StackPanel Grid.Row="2" VerticalAlignment="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,34,0,0" Height="50" Width="470" >
+            <Button Content="设置第五人格路径" Width="150" Height="50" FontSize="16" Name="PathEdit" Click="PathEdit_Click"/>
+            <Button Content="第五人格启动！" Width="150" Height="50" FontSize="20" Name="StartAll" Margin="10,0,0,0" Click="StartAll_Click"/>
+            <Button Content="单独启动登录脚本" Width="150" Height="50" FontSize="16" Name="Start" Click="Start_Click" Margin="10,0,0,0"/>
         </StackPanel>
-        <Button Content="关于" HorizontalAlignment="Left" Height="20" Margin="429,79,0,0" Grid.Row="2" VerticalAlignment="Top" Width="47" Click="Button_Click"/>
+        <Button Content="关于" Grid.Row="3" Height="20" HorizontalAlignment="Left" Margin="443,0,0,0" VerticalAlignment="Center" Width="47" Click="Button_Click"/>
     </Grid>
 </Window>
