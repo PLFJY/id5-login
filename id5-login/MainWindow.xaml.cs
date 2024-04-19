@@ -11,7 +11,7 @@ namespace id5_login
     /// </summary>
     public partial class MainWindow : Window
     {
-        public bool IsPythonInstalled, IsMitmproxyInstalled1, startScript , startDwrg;
+        public bool IsPythonInstalled, IsMitmproxyInstalled1, startScript;
         public static MainWindow mainWindow;
         public MainWindow()
         {
@@ -228,119 +228,6 @@ namespace id5_login
             }
             mainWindow.Title = "第五人格PC端登录工具";
         }
-
-        private void PathEdit_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "dwrg.exe|dwrg.exe";
-            if (openFileDialog.ShowDialog() == true)
-            {
-                string selectedFilePath = openFileDialog.FileName;
-                string appDataFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string filePath = Path.Combine(appDataFolderPath, "dwrg_path.txt");
-                File.WriteAllText(filePath, selectedFilePath);
-            }
-        }
-        public void CheckAndRunDWRGProgram()
-        {
-            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string dwrgFilePath = Path.Combine(appDataPath, "dwrg_path.txt");
-
-            if (File.Exists(dwrgFilePath))
-            {
-                string programPath = File.ReadAllText(dwrgFilePath).Trim();
-                if (File.Exists(programPath))
-                {
-                    System.Diagnostics.Process.Start(programPath);
-                }
-                else
-                {
-                    MessageBox.Show("文件中的程序路径不存在，请重新选择dwrg.exe程序");
-                    RunDWRGProgramAndWritePath(dwrgFilePath);
-                }
-            }
-            else
-            {
-                RunDWRGProgramAndWritePath(dwrgFilePath);
-            }
-        }
-        private void RunDWRGProgramAndWritePath(string dwrgFilePath)
-        {
-            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
-            openFileDialog.Title = "选择dwrg.exe程序";
-            openFileDialog.Filter = "dwrg程序|dwrg.exe";
-            if (openFileDialog.ShowDialog() == true)
-            {
-                string programPath = openFileDialog.FileName;
-                File.WriteAllText(dwrgFilePath, programPath);
-                System.Diagnostics.Process.Start(programPath);
-            }
-        }
-        private void StartAll_Click(object sender, RoutedEventArgs e)
-        {
-            if(startDwrg && startScript)
-            {
-                //关闭python.exe进程
-                Process[] processes = Process.GetProcessesByName("python");
-                foreach (Process process in processes)
-                {
-                    process.Kill();
-                }
-                //关闭cmd.exe进程
-                Process[] cmdProcesses = Process.GetProcessesByName("cmd");
-                foreach (Process cmdProcess in cmdProcesses)
-                {
-                    cmdProcess.Kill();
-                }
-                //关闭cmd.exe进程
-                Process[] dwrgProcesses = Process.GetProcessesByName("dwrg");
-                foreach (Process dwrgProcess in dwrgProcesses)
-                {
-                    dwrgProcess.Kill();
-                }
-                StartAll.Content = "第五人格启动！";
-                Start.Content = "单独启动登录脚本";
-            }
-            else
-            {
-                if (IsPythonInstalled && IsMitmproxyInstalled1)
-                {
-                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "idv-login-main\\run.bat");
-                    string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    string filePath = Path.Combine(appDataPath, "dwrg_path.txt");
-                    if (!File.Exists(filePath) || string.IsNullOrEmpty(File.ReadAllText(filePath)))
-                    {
-                        OpenFileDialog openFileDialog = new OpenFileDialog();
-                        openFileDialog.Title = "请选择dwrg.exe的安装目录";
-                        openFileDialog.Filter = "dwrg.exe|dwrg.exe";
-
-                        if (openFileDialog.ShowDialog() == true)
-                        {
-                            File.WriteAllText(filePath, openFileDialog.FileName);
-                        }
-                    }
-                    string path = File.ReadAllText(filePath).Trim();
-                    System.Diagnostics.Process process = new System.Diagnostics.Process();
-                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    startInfo.UseShellExecute = true;
-                    startInfo.Verb = "runas";
-                    startInfo.FileName = "cmd.exe";
-                    startInfo.Arguments = $"/C cd /d \"{Path.GetDirectoryName(path)}\" && start /b \"\" \"{path}\" && exit";
-                    process.StartInfo = startInfo;
-                    process.Start();
-                    Start.Content = "关闭登录脚本";
-                    startScript = true;
-                    StartAll.Content = "关闭全部";
-                    startDwrg = true;
-                }
-                else
-                {
-                    MessageBox.Show("请先安装Python或mitmproxy", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-        }
-        
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             if (startScript)
@@ -357,13 +244,16 @@ namespace id5_login
                 {
                     cmdProcess.Kill();
                 }
-                Start.Content = "单独启动登录脚本";
+                Start.Content = "启动登录脚本";
+                startScript = false;
             }
             else
             {
                 if (IsPythonInstalled && IsMitmproxyInstalled1)
                 {
                     Process.Start(AppDomain.CurrentDomain.BaseDirectory + "idv-login-main\\run.bat");
+                    Start.Content = "关闭登录脚本";
+                    startScript = true;
                 }
                 else
                 {

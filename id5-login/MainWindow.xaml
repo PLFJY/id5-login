@@ -25,11 +25,7 @@
             </StackPanel>
             <Button Content="初始化检查" Width="150" Height="50" Margin="50,0,0,15" FontSize="16" Name="InitCheck" Click="InitCheck_Click"/>
         </StackPanel>
-        <StackPanel Grid.Row="2" VerticalAlignment="Top" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,34,0,0" Height="50" Width="470" >
-            <Button Content="设置第五人格路径" Width="150" Height="50" FontSize="16" Name="PathEdit" Click="PathEdit_Click"/>
-            <Button Content="第五人格启动！" Width="150" Height="50" FontSize="20" Name="StartAll" Margin="10,0,0,0" Click="StartAll_Click"/>
-            <Button Content="单独启动登录脚本" Width="150" Height="50" FontSize="16" Name="Start" Click="Start_Click" Margin="10,0,0,0"/>
-        </StackPanel>
+        <Button Grid.Row="2" Content="启动登录脚本" Width="150" Height="50" FontSize="20" Name="Start" Click="Start_Click"/>
         <Button Content="关于" Grid.Row="3" Height="20" HorizontalAlignment="Left" Margin="443,0,0,0" VerticalAlignment="Center" Width="47" Click="Button_Click"/>
     </Grid>
 </Window>
