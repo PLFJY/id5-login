@@ -11,7 +11,7 @@ namespace id5_login
     /// </summary>
     public partial class MainWindow : Window
     {
-        public bool IsPythonInstalled, IsMitmproxyInstalled1, startScript;
+        public bool IsPythonInstalled, IsMitmproxyInstalled1, startScript, startDwrg, uninstall;
         public static MainWindow mainWindow;
         public MainWindow()
         {
@@ -30,6 +30,7 @@ namespace id5_login
             {
                 PythonCheck.Content = "安装Python";
                 IsPythonInstalled = false;
+                UninstallPython.IsEnabled = false;
             }
         }
         public void DownloadHttpFile(String http_url, String save_url)
@@ -96,20 +97,33 @@ namespace id5_login
             int persentToInt = (int)persent;
             //显示百分比
             label1.Content = persentToInt + "%";
-            if (persentToInt == 100)
+            if (persentToInt == 100 && uninstall == false)
             {
                 label1.Content = "下载完成";
                 if (Environment.Is64BitOperatingSystem)
                 {
                     // 64-bit system
-                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe");
+                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe", "/quiet /passive PrependPath=1");
                 }
                 else
                 {
                     // 32-bit system
-                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe");
+                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe", "/quiet /passive PrependPath=1");
                 }
-
+            }
+            if (uninstall)
+            {
+                label1.Content = "下载完成";
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    // 64-bit system
+                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe", "/quiet /uninstall");
+                }
+                else
+                {
+                    // 32-bit system
+                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe", "/quiet /uninstall");
+                }
             }
         }
         private void PythonCheck_Click(object sender, RoutedEventArgs e)
@@ -117,21 +131,40 @@ namespace id5_login
             MessageBoxResult result = MessageBox.Show("是否安装Python", "Python Installation", MessageBoxButton.OKCancel);
             if (result == MessageBoxResult.OK)
             {
-                string http_url, save_url;
-                if (Environment.Is64BitOperatingSystem)
+                string rootPath = AppDomain.CurrentDomain.BaseDirectory;
+                string pythonExePath1 = Path.Combine(rootPath, "python-3.12.2-amd64.exe");
+                string pythonExePath2 = Path.Combine(rootPath, "python-3.12.3.exe");
+                if (File.Exists(pythonExePath1) || File.Exists(pythonExePath2))
                 {
-                    // 64-bit system
-                    http_url = "https://gitee.com/plfjy/id5-login-resource/releases/download/V1.0/python-3.12.2-amd64.exe";
-                    save_url = AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe";
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        // 64-bit system
+                        Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe", "/quiet /passive PrependPath=1");
+                    }
+                    else
+                    {
+                        // 32-bit system
+                        Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe", "/quiet /passive PrependPath=1");
+                    }
                 }
                 else
                 {
-                    // 32-bit system
-                    http_url = "https://gitee.com/plfjy/id5-login-resource/releases/download/V1.0/python-3.12.3.exe";
-                    save_url = AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe";
+                    string http_url, save_url;
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        // 64-bit system
+                        http_url = "https://gitee.com/plfjy/id5-login-resource/releases/download/V1.0/python-3.12.2-amd64.exe";
+                        save_url = AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe";
+                    }
+                    else
+                    {
+                        // 32-bit system
+                        http_url = "https://gitee.com/plfjy/id5-login-resource/releases/download/V1.0/python-3.12.3.exe";
+                        save_url = AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe";
+                    }
+                    DownloadHttpFile(http_url, save_url);
+                    Pb.Visibility = Visibility.Visible;
                 }
-                DownloadHttpFile(http_url, save_url);
-                Pb.Visibility = Visibility.Visible;
             }
         }
         public bool IsMitmproxyInstalled()
@@ -171,7 +204,7 @@ namespace id5_login
             {
                 try
                 {
-                    ProcessStartInfo processInfo = new ProcessStartInfo($"cmd.exe", "/k \"python idv-login-main\\setUp.py\"");
+                    ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/k \"pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && python idv-login-main\\setUp.py\"");
                     processInfo.Verb = "runas";
                     Process.Start(processInfo);
                 }
@@ -228,6 +261,179 @@ namespace id5_login
             }
             mainWindow.Title = "第五人格PC端登录工具";
         }
+
+        private void PathEdit_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "dwrg.exe|dwrg.exe";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string selectedFilePath = openFileDialog.FileName;
+                string appDataFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string filePath = Path.Combine(appDataFolderPath, "dwrg_path.txt");
+                File.WriteAllText(filePath, selectedFilePath);
+            }
+        }
+        public void CheckAndRunDWRGProgram()
+        {
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string dwrgFilePath = Path.Combine(appDataPath, "dwrg_path.txt");
+
+            if (File.Exists(dwrgFilePath))
+            {
+                string programPath = File.ReadAllText(dwrgFilePath).Trim();
+                if (File.Exists(programPath))
+                {
+                    System.Diagnostics.Process.Start(programPath);
+                }
+                else
+                {
+                    MessageBox.Show("文件中的程序路径不存在，请重新选择dwrg.exe程序");
+                    RunDWRGProgramAndWritePath(dwrgFilePath);
+                }
+            }
+            else
+            {
+                RunDWRGProgramAndWritePath(dwrgFilePath);
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            mainWindow.Title = "正在检测环境...";
+            CheckPythonAndPipInstallationAndUpdateButton();
+            if (IsMitmproxyInstalled() == true)
+            {
+                InitCheck.Content = "mitmproxy已安装";
+                IsMitmproxyInstalled1 = true;
+            }
+            else
+            {
+                InitCheck.Content = "安装mitmproxy";
+                IsMitmproxyInstalled1 = false;
+            }
+            mainWindow.Title = "第五人格PC端登录工具";
+        }
+
+        private void UninstallPython_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("是否卸载Python", "Python Uninstall", MessageBoxButton.OKCancel);
+            if (result == MessageBoxResult.OK)
+            {
+                string rootPath = AppDomain.CurrentDomain.BaseDirectory;
+                string pythonExePath1 = Path.Combine(rootPath, "python-3.12.2-amd64.exe");
+                string pythonExePath2 = Path.Combine(rootPath, "python-3.12.3.exe");
+                if (File.Exists(pythonExePath1) || File.Exists(pythonExePath2))
+                {
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        // 64-bit system
+                        Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe", "/quiet /uninstall");
+                    }
+                    else
+                    {
+                        // 32-bit system
+                        Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe", "/quiet /uninstall");
+                    }
+                }
+                else
+                {
+                    string http_url, save_url;
+                    if (Environment.Is64BitOperatingSystem)
+                    {
+                        // 64-bit system
+                        http_url = "https://gitee.com/plfjy/id5-login-resource/releases/download/V1.0/python-3.12.2-amd64.exe";
+                        save_url = AppDomain.CurrentDomain.BaseDirectory + "python-3.12.2-amd64.exe";
+                    }
+                    else
+                    {
+                        // 32-bit system
+                        http_url = "https://gitee.com/plfjy/id5-login-resource/releases/download/V1.0/python-3.12.3.exe";
+                        save_url = AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe";
+                    }
+                    DownloadHttpFile(http_url, save_url);
+                    Pb.Visibility = Visibility.Visible;
+                }
+            }
+        }
+
+        private void RunDWRGProgramAndWritePath(string dwrgFilePath)
+        {
+            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            openFileDialog.Title = "选择dwrg.exe程序";
+            openFileDialog.Filter = "dwrg程序|dwrg.exe";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string programPath = openFileDialog.FileName;
+                File.WriteAllText(dwrgFilePath, programPath);
+                System.Diagnostics.Process.Start(programPath);
+            }
+        }
+        private void StartAll_Click(object sender, RoutedEventArgs e)
+        {
+            if (startDwrg && startScript)
+            {
+                //关闭python.exe进程
+                Process[] processes = Process.GetProcessesByName("python");
+                foreach (Process process in processes)
+                {
+                    process.Kill();
+                }
+                //关闭cmd.exe进程
+                Process[] cmdProcesses = Process.GetProcessesByName("cmd");
+                foreach (Process cmdProcess in cmdProcesses)
+                {
+                    cmdProcess.Kill();
+                }
+                //关闭cmd.exe进程
+                Process[] dwrgProcesses = Process.GetProcessesByName("dwrg");
+                foreach (Process dwrgProcess in dwrgProcesses)
+                {
+                    dwrgProcess.Kill();
+                }
+                StartAll.Content = "第五人格启动！";
+                Start.Content = "单独启动登录脚本";
+            }
+            else
+            {
+                if (IsPythonInstalled && IsMitmproxyInstalled1)
+                {
+                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "idv-login-main\\run.bat");
+                    string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                    string filePath = Path.Combine(appDataPath, "dwrg_path.txt");
+                    if (!File.Exists(filePath) || string.IsNullOrEmpty(File.ReadAllText(filePath)))
+                    {
+                        OpenFileDialog openFileDialog = new OpenFileDialog();
+                        openFileDialog.Title = "请选择dwrg.exe的安装目录";
+                        openFileDialog.Filter = "dwrg.exe|dwrg.exe";
+
+                        if (openFileDialog.ShowDialog() == true)
+                        {
+                            File.WriteAllText(filePath, openFileDialog.FileName);
+                        }
+                    }
+                    string path = File.ReadAllText(filePath).Trim();
+                    System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    startInfo.UseShellExecute = true;
+                    startInfo.Verb = "runas";
+                    startInfo.FileName = "cmd.exe";
+                    startInfo.Arguments = $"/C cd /d \"{Path.GetDirectoryName(path)}\" && start /b \"\" \"{path}\" && exit";
+                    process.StartInfo = startInfo;
+                    process.Start();
+                    Start.Content = "关闭登录脚本";
+                    startScript = true;
+                    StartAll.Content = "关闭全部";
+                    startDwrg = true;
+                }
+                else
+                {
+                    MessageBox.Show("请先安装Python或mitmproxy", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
         private void Start_Click(object sender, RoutedEventArgs e)
         {
             if (startScript)
@@ -244,16 +450,13 @@ namespace id5_login
                 {
                     cmdProcess.Kill();
                 }
-                Start.Content = "启动登录脚本";
-                startScript = false;
+                Start.Content = "单独启动登录脚本";
             }
             else
             {
                 if (IsPythonInstalled && IsMitmproxyInstalled1)
                 {
                     Process.Start(AppDomain.CurrentDomain.BaseDirectory + "idv-login-main\\run.bat");
-                    Start.Content = "关闭登录脚本";
-                    startScript = true;
                 }
                 else
                 {
