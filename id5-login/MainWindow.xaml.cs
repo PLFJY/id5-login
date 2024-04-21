@@ -414,7 +414,10 @@ namespace id5_login
             {
                 if (IsPythonInstalled && IsMitmproxyInstalled1)
                 {
-                    Process.Start(AppDomain.CurrentDomain.BaseDirectory + "idv-login-main\\run.bat");
+                    if (!startScript)
+                    {
+                        Process.Start(AppDomain.CurrentDomain.BaseDirectory + "idv-login-main\\run.bat");
+                    }
                     string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                     string filePath = Path.Combine(appDataPath, "dwrg_path.txt");
                     if (!File.Exists(filePath) || string.IsNullOrEmpty(File.ReadAllText(filePath)))
@@ -473,6 +476,8 @@ namespace id5_login
                 if (IsPythonInstalled && IsMitmproxyInstalled1)
                 {
                     Process.Start(AppDomain.CurrentDomain.BaseDirectory + "idv-login-main\\run.bat");
+                    Start.Content = "关闭登录脚本";
+                    startScript = true;
                 }
                 else
                 {
