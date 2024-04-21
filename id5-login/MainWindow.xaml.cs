@@ -25,6 +25,7 @@ namespace id5_login
             {
                 PythonCheck.Content = "重新安装Python";
                 IsPythonInstalled = true;
+                UninstallPython.IsEnabled = true;
             }
             else if (!isPythonInstalled)
             {
@@ -99,7 +100,8 @@ namespace id5_login
             label1.Content = persentToInt + "%";
             if (persentToInt == 100 && uninstall == false)
             {
-                label1.Content = "下载完成";
+                Pb.Visibility = Visibility.Hidden;
+                Thread.Sleep(1000);
                 if (Environment.Is64BitOperatingSystem)
                 {
                     // 64-bit system
@@ -113,7 +115,6 @@ namespace id5_login
             }
             if (uninstall)
             {
-                label1.Content = "下载完成";
                 if (Environment.Is64BitOperatingSystem)
                 {
                     // 64-bit system
@@ -238,7 +239,6 @@ namespace id5_login
                 cmdProcess.Kill();
             }
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             //启动About窗口
@@ -260,6 +260,22 @@ namespace id5_login
                 IsMitmproxyInstalled1 = false;
             }
             mainWindow.Title = "第五人格PC端登录工具";
+            string pythonExePath1 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "python-3.12.3.exe");
+            string pythonExePath2 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "python-3.12.2-amd64.exe");
+            if (File.Exists(pythonExePath1) && new FileInfo(pythonExePath1).Length != 25408176)
+            {
+                try
+                {
+                    File.Delete(pythonExePath1);
+                }
+                catch { }
+            }
+            if (File.Exists(pythonExePath2) && new FileInfo(pythonExePath2).Length != 26667456)
+            {
+                try { File.Delete(pythonExePath2); }
+                catch { }
+
+            }
         }
 
         private void PathEdit_Click(object sender, RoutedEventArgs e)

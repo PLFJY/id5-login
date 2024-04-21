@@ -14,8 +14,8 @@
             <RowDefinition Height="16*"/>
         </Grid.RowDefinitions>
         <Label Content="第五人格PC端登录工具" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Height="36" Width="216"/>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,20,0">
-            <StackPanel VerticalAlignment="Bottom">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,15,0">
+            <StackPanel VerticalAlignment="Bottom" Margin="10,0,0,0">
                 <Button Content="Python安装检查" Width="150" Height="50" FontSize="16" Name="PythonCheck" Click="PythonCheck_Click"/>
                 <StackPanel Name="Pb" Margin="0,10,0,0" Orientation="Horizontal" Visibility="Hidden">
                     <Label Name="Label2" Content="下载进度"/>
