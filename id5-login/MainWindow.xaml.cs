@@ -100,7 +100,6 @@ namespace id5_login
             label1.Content = persentToInt + "%";
             if (persentToInt == 100 && !uninstall)
             {
-                Pb.Visibility = Visibility.Hidden;
                 Thread.Sleep(1000);
                 if (Environment.Is64BitOperatingSystem)
                 {
