@@ -113,7 +113,7 @@ namespace id5_login
                     Process.Start(AppDomain.CurrentDomain.BaseDirectory + "python-3.12.3.exe", "/quiet /passive PrependPath=1");
                 }
             }
-            if (uninstall)
+            if (persentToInt == 100 && uninstall)
             {
                 if (Environment.Is64BitOperatingSystem)
                 {
