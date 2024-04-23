@@ -98,7 +98,7 @@ namespace id5_login
             int persentToInt = (int)persent;
             //显示百分比
             label1.Content = persentToInt + "%";
-            if (persentToInt == 100 && uninstall == false)
+            if (persentToInt == 100 && !uninstall)
             {
                 Pb.Visibility = Visibility.Hidden;
                 Thread.Sleep(1000);
@@ -354,6 +354,7 @@ namespace id5_login
                 }
                 else
                 {
+                    uninstall = true;
                     string http_url, save_url;
                     if (Environment.Is64BitOperatingSystem)
                     {
